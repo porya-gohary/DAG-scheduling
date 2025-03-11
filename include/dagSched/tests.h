@@ -85,6 +85,7 @@ bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m);
 bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m, const PartitioningCoresOrder_t c_order);
 
 bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m);
+double get_Nasri2019_runtime();
 
 #ifdef ZAHAF2019
 bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m);

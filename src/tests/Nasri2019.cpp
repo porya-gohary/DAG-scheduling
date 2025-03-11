@@ -8,7 +8,7 @@
 
 namespace dagSched{
 
-	double nasri2019_runtime = 0;
+double nasri2019_runtime = 0;
 
 bool test(std::istream &in,
 	std::istream &dag_in,
@@ -34,7 +34,7 @@ bool test(std::istream &in,
 	auto space = NP::Global::State_space<dtime_t>::explore(problem, opts);
 
 	// get CPU time of the analysis
-	runtime = space.get_cpu_time();
+	nasri2019_runtime = space.get_cpu_time();
 
 	// Extract the analysis results
 	// auto graph = std::ostringstream();
@@ -75,7 +75,7 @@ std::string convertTasksetToCsv(Taskset& taskset){
 							", " + std::to_string(i + index) +  //Job ID
 							", " + std::to_string(arrival_min) + //Release min
 							", " + std::to_string(arrival_max) + //Release max
-							", " + std::to_string((int) V[i]->c) + //Cost min
+							", " + std::to_string(0) + //Cost min
 							", " + std::to_string((int) V[i]->c) + //Cost max
 							", " + std::to_string((int) (arrival_min + taskset.tasks[x].getDeadline())) +
 							//absolute Deadline
@@ -150,7 +150,7 @@ bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m){
     return test(in, dag_in, aborts_in, m);
 }
 
-double get_runtime(){
+double get_Nasri2019_runtime(){
 	return nasri2019_runtime;
 }
 

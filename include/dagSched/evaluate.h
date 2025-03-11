@@ -150,7 +150,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
 
                     sched_res["Nasri2019"][test_idx] +=  G_LP_FTP_Nasri2019_C(task_set, m);
-                    time_res["Nas2019"].push_back(G_LP_FTP_Nasri2019_C.get_runtime());
+                    time_res["Nas2019"].push_back(get_Nasri2019_runtime());
 
                     timer.tic();
                     sched_res["He2019"][test_idx] +=  GP_FP_FTP_He2019_C(task_set, m);
