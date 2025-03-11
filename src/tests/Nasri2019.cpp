@@ -151,7 +151,8 @@ bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m){
 }
 
 double get_Nasri2019_runtime(){
-	return nasri2019_runtime;
+	// convert from seconds to microseconds
+	return nasri2019_runtime * 1000000;
 }
 
 }
