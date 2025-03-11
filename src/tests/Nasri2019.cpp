@@ -8,6 +8,8 @@
 
 namespace dagSched{
 
+	double nasri2019_runtime = 0;
+
 bool test(std::istream &in,
 	std::istream &dag_in,
 	std::istream &aborts_in, const int m){
@@ -30,6 +32,9 @@ bool test(std::istream &in,
 
 	// Actually call the analysis engine
 	auto space = NP::Global::State_space<dtime_t>::explore(problem, opts);
+
+	// get CPU time of the analysis
+	runtime = space.get_cpu_time();
 
 	// Extract the analysis results
 	// auto graph = std::ostringstream();
@@ -143,6 +148,10 @@ bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m){
     std::stringstream aborts_in;
 
     return test(in, dag_in, aborts_in, m);
+}
+
+double get_runtime(){
+	return nasri2019_runtime;
 }
 
 }
