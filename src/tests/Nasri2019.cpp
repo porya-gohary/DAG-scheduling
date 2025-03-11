@@ -51,40 +51,57 @@ bool test(std::istream &in,
 }
 
 std::string convertTasksetToCsv(Taskset& taskset){
-
+	// get the hyperperiod
+	auto hp = taskset.getHyperPeriod();
     std::string task_set = "   Task ID,     Job ID,          Arrival min,          Arrival max,             Cost min,             Cost max,             Deadline,             Priority\n";
-    for(int x=0; x<taskset.tasks.size();++x){
-        std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-        // taskset.tasks[x].computeEFTs();
-        // taskset.tasks[x].computeLSTs();
 
-        for(int i=0; i<V.size(); ++i){
-            task_set += std::to_string(x) +  //Task ID
-                        ", " + std::to_string(i) +  //Job ID
-                        ", 0 " + //Release min
-                        ", 0 " + //Release max
-                        ", " + std::to_string((int)V[i]->c) + //Cost min
-                        ", " + std::to_string((int)V[i]->c) + //Cost max
-                        ", " + std::to_string((int)taskset.tasks[x].getDeadline()) + //Deadline
-                        ", " + std::to_string((int)taskset.tasks[x].getDeadline()) + "\n";  //Priority
-            
-        }
-    }
+	// the task set should be unfolded to a job set in the hyperperiod
+	for(int x=0; x<taskset.tasks.size();++x) {
+		// generate jobs of each task in the hyperperiod
+		for (auto index = 0; index * taskset.tasks[x].getPeriod() < hp; ++index) {
+			// calculate the arrival min and max
+			auto arrival_min = long(index * taskset.tasks[x].getPeriod());
+			// for now, we consider that there is no jitter
+			auto arrival_max = long(index * taskset.tasks[x].getPeriod());
+
+			std::vector<SubTask *> V = taskset.tasks[x].getVertices();
+			for (int i = 0; i < V.size(); ++i) {
+				task_set += std::to_string(x) +  //Task ID
+							", " + std::to_string(i + index) +  //Job ID
+							", " + std::to_string(arrival_min) + //Release min
+							", " + std::to_string(arrival_max) + //Release max
+							", " + std::to_string((int) V[i]->c) + //Cost min
+							", " + std::to_string((int) V[i]->c) + //Cost max
+							", " + std::to_string((int) (arrival_min + taskset.tasks[x].getDeadline())) +
+							//absolute Deadline
+							//", " + std::to_string((int) (arrival_min + taskset.tasks[x].getDeadline())) +
+							//"\n";  //Priority (EDF)
+							 ", " + std::to_string((int) (taskset.tasks[x].getPeriod())) + "\n";  //Priority (RM)
+			}
+		}
+	}
 
     return task_set;
 
 }
 
 std::string convertDAGsToCsv(const Taskset& taskset){
+	// get the hyperperiod
+	auto hp = taskset.getHyperPeriod();
     std::string prec = "Predecessor TID,	Predecessor JID,	Successor TID, Successor JID\n";
-    for(int x=0; x<taskset.tasks.size();++x){
-        std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-        for(int i=0; i<V.size(); ++i){
-            for(int j=0; j<V[i]->succ.size(); ++j){
-                prec = prec + std::to_string(x) + ", " + std::to_string(i) + ", " + std::to_string(x) + ", " + std::to_string(V[i]->succ[j]->id) + "\n";
-            }
-        }
-    }
+	for (int x = 0; x < taskset.tasks.size(); ++x) {
+		// generate jobs of each task in the hyperperiod
+		for (auto index = 0; index * taskset.tasks[x].getPeriod() < hp; ++index) {
+			std::vector<SubTask *> V = taskset.tasks[x].getVertices();
+			for (int i = 0; i < V.size(); ++i) {
+				for (int j = 0; j < V[i]->succ.size(); ++j) {
+					prec = prec + std::to_string(x) + ", " + std::to_string(i + index) + ", " + std::to_string(x) +
+						   ", " + std::to_string(V[i]->succ[j]->id + index) + "\n";
+				}
+			}
+
+		}
+	}
 
     return prec;
 }
